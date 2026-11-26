@@ -1,77 +1,82 @@
-# EDO Portal
+# IEANJESÚS La Libertad
 
-Корпоративная система электронного документооборота на Laravel для учета документов, маршрутов согласования и работы сотрудников по ролям.
+## Sistema de gestión y control de informes mensuales
 
-## О проекте
+Plataforma web para registrar, consultar y dar seguimiento a los informes mensuales de los departamentos de IEANJESÚS La Libertad.
 
-EDO Portal показывает, как можно собрать прикладную бизнес-систему вокруг реального процесса: документ создается сотрудником, проходит маршрут согласования, возвращается на доработку при замечаниях, утверждается и передается в электронный архив.
+## Proyecto académico
 
-Ключевой фокус: **Автоматизация бизнес-процессов, работа с ролями, БД и интерфейсом на Livewire**.
+Trabajo de integración curricular: Diseño e Implementación de una Plataforma Web para la Gestión y Control de Informes Mensuales de los Departamentos de la IEANJESÚS La Libertad.
 
-## Возможности
+Estudiante: Mariela Abigail Yagual Intriago.
 
-- Роли пользователей: администратор, сотрудник, руководитель отдела, канцелярия.
-- Документы с типами, приоритетами, отделами, сроками, файлами и контрагентами.
-- Маршруты согласования с последовательными этапами и ответственными.
-- История действий по документу: создание, отправка, согласование, возврат, архивирование.
-- Livewire-журнал документов с поиском, фильтрами и обновлением без перезагрузки страницы.
-- Ограничение видимости документов по роли, отделу, авторству и текущим задачам.
-- Seeder с демонстрационными отделами, сотрудниками и документами для быстрого просмотра.
+## Funcionalidades
 
+- Autenticación y gestión de usuarios activos.
+- Administración de departamentos y asignación de roles.
+- Formularios de informes mensuales basados en plantillas.
+- Registro de borradores, envío, revisión, observaciones, corrección y aprobación.
+- Consulta mediante filtros de departamento, período y estado.
+- Panel de indicadores de cumplimiento y seguimiento.
 
+## Roles previstos
 
-- Собрал Laravel-структуру для документооборота: документы, отделы, пользователи, роли и маршруты согласования.
-- Реализовал Livewire-журнал с поиском, фильтрами, пагинацией и быстрым переходом в карточку документа.
-- Настроил seed-данные для демо-входа, чтобы проект можно было открыть и проверить без ручной подготовки БД.
-- Добавил audit log и сервис `DocumentWorkflowService` для действий по маршруту: отправка, согласование, возврат и архив.
-- Почистил публикацию: `.env`, `vendor`, `node_modules`, storage-файлы и build artifacts не уходят в public repo.
+| Rol | Responsabilidad |
+|---|---|
+| Administrador | Gestión de usuarios y departamentos; consulta institucional |
+| Secretario de departamento | Elaboración, corrección y envío de informes propios |
+| Secretaría de Junta Local | Revisión, observaciones y aprobación |
+| Director de departamento | Consulta departamental |
+| Pastor | Supervisión y consulta institucional |
 
-## Стек
+## Tecnologías
 
-- PHP 8.1+
-- Laravel 10
-- Livewire 2
-- Laravel Breeze
-- Tailwind CSS
-- MySQL или SQLite
+Laravel 10, PHP, PostgreSQL, Blade, Tailwind CSS, Livewire, Composer, Node.js y Vite.
 
-## Быстрый старт
+## Instalación en un entorno nuevo
 
-```bash
+Revisar los requisitos de composer.json y package.json antes de instalar.
+
+```powershell
 composer install
-npm install
-cp .env.example .env
+npm.cmd ci
+Copy-Item .env.example .env
 php artisan key:generate
-php artisan migrate --seed
-npm run build
-php artisan serve
 ```
 
-Тестовые пользователи создаются сидером. Например:
+El comando de copia y la generación de clave son exclusivos de una instalación nueva. No sobrescribir el archivo .env ni regenerar APP_KEY en una instalación existente.
 
-```text
-admin@edo.local / Admin12345
-office@edo.local / Office12345
-analyst@edo.local / Employee123
+Configurar .env con los valores de la base PostgreSQL previamente creada:
+
+```dotenv
+APP_NAME="IEANJESÚS La Libertad"
+APP_ENV=local
+APP_URL=http://127.0.0.1:8001
+APP_LOCALE=es
+APP_FALLBACK_LOCALE=es
+DB_CONNECTION=pgsql
+DB_HOST=127.0.0.1
+DB_PORT=5432
+DB_DATABASE=ieanjesus
+DB_USERNAME=usuario_local
+DB_PASSWORD=contraseña_local
 ```
 
-Если демо-база пустая, пересоберите ее:
+En una base nueva ejecutar `php artisan migrate`. La inicialización de plantillas y cuentas institucionales debe realizarse mediante el procedimiento autorizado del proyecto; no ejecutar los seeders de demostración heredados sobre una base institucional.
 
-```bash
-php artisan migrate:fresh --seed
+```powershell
+npm.cmd run build
+php artisan serve --host=127.0.0.1 --port=8001
 ```
 
-## Проверки
+Acceso local: http://127.0.0.1:8001
 
-```bash
-php artisan test
-npm run build
-```
+## Verificación y seguridad
 
-## Что показывает проект работодателю
+Comprobar la configuración mediante `php artisan migrate:status` y `php artisan view:cache`. Ejecutar `php artisan test` únicamente con una base de pruebas aislada y previamente configurada. Las pruebas funcionales de los cinco roles deben documentarse con resultados reales.
 
-- Понимание Laravel MVC, Eloquent relationships, migrations и seeders.
-- Проектирование бизнес-ролей и прав доступа.
-- Работа с транзакциями и audit log через `DocumentWorkflowService`.
-- Реактивный интерфейс на Livewire без отдельного SPA-слоя.
-- Умение упаковать учебный проект в понятный production-like кейс.
+No publicar credenciales, archivos .env, copias de bases de datos ni datos personales. En producción utilizar HTTPS, APP_DEBUG=false y respaldos periódicos. No utilizar migrate:fresh sobre bases con información institucional.
+
+## Créditos y licencia
+
+Adaptación académica basada en el proyecto [EDO Portal](https://github.com/SemGAA/edo-portal), con personalización institucional y módulos de informes mensuales. Conservar los avisos de autoría y las condiciones de licencia del código original y sus dependencias. La licencia concreta del proyecto base debe verificarse en el repositorio antes de redistribuirlo.

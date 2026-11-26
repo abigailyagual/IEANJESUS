@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('documents', function (Blueprint $table) {
-            $table->unsignedInteger('workflow_round')->default(0)->after('rejection_reason');
+            $table->unsignedInteger('workflow_round')->default(0);
         });
 
         Schema::create('document_workflow_steps', function (Blueprint $table) {

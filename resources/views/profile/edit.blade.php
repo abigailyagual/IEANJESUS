@@ -1,8 +1,8 @@
 @extends('layouts.system')
 
-@section('title', 'Профиль')
-@section('page-title', 'Профиль')
-@section('eyebrow', 'Личные настройки')
+@section('title', 'Mi perfil')
+@section('page-title', 'Mi perfil')
+@section('eyebrow', 'Configuración personal')
 
 @section('content')
     <div class="space-y-6">
@@ -14,8 +14,6 @@
             @include('profile.partials.update-password-form')
         </section>
 
-        <section class="panel p-5">
-            @include('profile.partials.delete-user-form')
-        </section>
+        
     </div>
 @endsection

@@ -41,6 +41,6 @@ class DocumentActionLog extends Model
 
     public function getActorNameAttribute(): string
     {
-        return $this->user?->name ?? 'Система';
+        return $this->user?->name ?? 'Sistema';
     }
 }

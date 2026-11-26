@@ -45,7 +45,7 @@ class CategoryController extends Controller
 
         return redirect()
             ->route('categories.index')
-            ->with('status', 'Отдел добавлен.');
+            ->with('status', 'Departamento registrado correctamente.');
     }
 
     /**
@@ -90,7 +90,7 @@ class CategoryController extends Controller
 
         return redirect()
             ->route('categories.index')
-            ->with('status', 'Отдел обновлен.');
+            ->with('status', 'Departamento actualizado correctamente.');
     }
 
     /**
@@ -104,7 +104,7 @@ class CategoryController extends Controller
 
         return redirect()
             ->route('categories.index')
-            ->with('status', 'Отдел удален.');
+            ->with('status', 'Departamento eliminado correctamente.');
     }
 
     /**

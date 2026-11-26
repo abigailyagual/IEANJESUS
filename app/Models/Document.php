@@ -17,26 +17,26 @@ class Document extends Model
     use SoftDeletes;
 
     public const TYPE_LABELS = [
-        'internal' => 'Внутренний',
-        'incoming' => 'Входящий',
-        'outgoing' => 'Исходящий',
-        'contract' => 'Договор',
-        'order' => 'Приказ',
+        'internal' => 'Interno',
+        'incoming' => 'Entrante',
+        'outgoing' => 'Saliente',
+        'contract' => 'Contrato',
+        'order' => 'Orden',
     ];
 
     public const STATUS_LABELS = [
-        'draft' => 'Черновик',
-        'in_review' => 'На согласовании',
-        'approved' => 'Согласован',
-        'rejected' => 'Возвращен',
-        'archived' => 'В архиве',
+        'draft' => 'Borrador',
+        'in_review' => 'En revisión',
+        'approved' => 'Aprobado',
+        'rejected' => 'Devuelto para corrección',
+        'archived' => 'Archivado',
     ];
 
     public const PRIORITY_LABELS = [
-        'low' => 'Низкий',
-        'normal' => 'Нормальный',
-        'high' => 'Высокий',
-        'critical' => 'Критичный',
+        'low' => 'Bajo',
+        'normal' => 'Normal',
+        'high' => 'Alto',
+        'critical' => 'Crítico',
     ];
 
     protected $fillable = [
@@ -58,6 +58,8 @@ class Document extends Model
         'archived_at',
         'rejection_reason',
         'workflow_round',
+        'report_month',
+        'report_year',
     ];
 
     protected $casts = [
@@ -67,6 +69,8 @@ class Document extends Model
         'approved_at' => 'datetime',
         'archived_at' => 'datetime',
         'workflow_round' => 'integer',
+        'report_month' => 'integer',
+        'report_year' => 'integer',
     ];
 
     public function category()
@@ -203,18 +207,18 @@ class Document extends Model
     public function getCurrentStepLabelAttribute(): string
     {
         if ($this->status === 'approved') {
-            return 'Маршрут завершен';
+            return 'Flujo finalizado';
         }
 
         if ($this->status === 'archived') {
-            return 'Передан в архив';
+            return 'Enviado al archivo';
         }
 
         if ($this->status === 'rejected') {
-            return 'Ожидает доработки автора';
+            return 'Pendiente de corrección por el autor';
         }
 
-        return $this->current_step?->title ?? 'Маршрут не запущен';
+        return $this->current_step?->title ?? 'Flujo no iniciado';
     }
 
     public function isAwaitingActionBy(User $user): bool

@@ -1,7 +1,7 @@
 <section>
     <header>
-        <h2 class="text-lg font-medium text-slate-900">Данные профиля</h2>
-        <p class="mt-1 text-sm text-slate-600">Обновите имя и адрес электронной почты для входа в систему.</p>
+        <h2 class="text-lg font-medium text-slate-900">Información del perfil</h2>
+        <p class="mt-1 text-sm text-slate-600">Actualice su nombre y correo electrónico para acceder al sistema.</p>
     </header>
 
     <form id="send-verification" method="post" action="{{ route('verification.send') }}">
@@ -13,7 +13,7 @@
         @method('patch')
 
         <div>
-            <x-input-label for="name" :value="'Имя'" />
+            <x-input-label for="name" :value="'Nombre'" />
             <x-text-input id="name" name="name" type="text" class="mt-1 block w-full" :value="old('name', $user->name)" required autofocus autocomplete="name" />
             <x-input-error class="mt-2" :messages="$errors->get('name')" />
         </div>
@@ -25,7 +25,9 @@
         </div>
 
         <div class="flex items-center gap-4">
-            <x-primary-button>Сохранить</x-primary-button>
+            
+        <x-primary-button>Guardar cambios</x-primary-button>
+
 
             @if (session('status') === 'profile-updated')
                 <p
@@ -34,7 +36,7 @@
                     x-transition
                     x-init="setTimeout(() => show = false, 2000)"
                     class="text-sm text-slate-600"
-                >Сохранено.</p>
+                >Guardado.</p>
             @endif
         </div>
     </form>

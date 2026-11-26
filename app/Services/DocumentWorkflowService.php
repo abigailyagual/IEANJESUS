@@ -35,7 +35,7 @@ class DocumentWorkflowService
             $document->loadMissing(['category', 'approver']);
 
             $nextRound = (int) $document->workflow_round + 1;
-            $this->skipOpenSteps($document, 'Маршрут обновлен новой отправкой документа.');
+            $this->skipOpenSteps($document, 'Flujo actualizado con el nuevo envío del documento.');
 
             $steps = $this->buildSteps($document);
 
@@ -57,8 +57,8 @@ class DocumentWorkflowService
                     $document,
                     $actor,
                     'submitted',
-                    'Документ согласован автоматически',
-                    'Для документа не найдено обязательных этапов маршрута.',
+                    'Documento aprobado automáticamente',
+                    'No se encontraron etapas obligatorias para el documento.',
                     null,
                     ['round' => $nextRound]
                 );
@@ -87,8 +87,8 @@ class DocumentWorkflowService
                 $document,
                 $actor,
                 'submitted',
-                'Документ отправлен на согласование',
-                'Маршрут сформирован и передан на первый этап.',
+                'Documento enviado a revisión',
+                'Flujo generado y enviado a la primera etapa.',
                 null,
                 [
                     'round' => $nextRound,
@@ -134,8 +134,8 @@ class DocumentWorkflowService
                     $document,
                     $actor,
                     'step_approved',
-                    'Этап согласования завершен',
-                    $comment ?: sprintf('Этап "%s" завершен без замечаний.', $currentStep->title),
+                    'Etapa de aprobación finalizada',
+                    $comment ?: sprintf('Etapa "%s" finalizada sin observaciones.', $currentStep->title),
                     $currentStep,
                     ['next_step' => $nextStep->title]
                 );
@@ -154,8 +154,8 @@ class DocumentWorkflowService
                 $document,
                 $actor,
                 'approved',
-                'Документ согласован по всем этапам',
-                $comment ?: 'Маршрут завершен успешно.',
+                'Documento aprobado en todas las etapas',
+                $comment ?: 'Flujo finalizado correctamente.',
                 $currentStep
             );
         });
@@ -170,7 +170,7 @@ class DocumentWorkflowService
                 return;
             }
 
-            $reason = $comment ?: 'Документ возвращен на доработку без дополнительного комментария.';
+            $reason = $comment ?: 'Documento devuelto para corrección sin comentarios adicionales.';
 
             $currentStep->update([
                 'status' => DocumentWorkflowStep::STATUS_REJECTED,
@@ -183,7 +183,7 @@ class DocumentWorkflowService
                 ->where('status', DocumentWorkflowStep::STATUS_PENDING)
                 ->update([
                     'status' => DocumentWorkflowStep::STATUS_SKIPPED,
-                    'comment' => 'Этап отменен после отклонения документа.',
+                    'comment' => 'Etapa cancelada tras el rechazo del documento.',
                     'acted_at' => now(),
                 ]);
 
@@ -198,7 +198,7 @@ class DocumentWorkflowService
                 $document,
                 $actor,
                 'rejected',
-                'Документ возвращен на доработку',
+                'Documento devuelto para corrección',
                 $reason,
                 $currentStep
             );
@@ -217,8 +217,8 @@ class DocumentWorkflowService
                 $document,
                 $actor,
                 'archived',
-                'Документ переведен в архив',
-                $comment ?: 'Карточка закрыта и помещена в электронный архив.'
+                'Documento archivado',
+                $comment ?: 'Registro cerrado y guardado en el archivo electrónico.'
             );
         });
     }
@@ -239,7 +239,7 @@ class DocumentWorkflowService
 
         if ($departmentHead && $departmentHead->id !== $document->author_id) {
             $steps[] = [
-                'title' => 'Согласование руководителем отдела',
+                'title' => 'Aprobación del director de departamento',
                 'role_code' => DocumentWorkflowStep::ROLE_DEPARTMENT_HEAD,
                 'user_id' => $departmentHead->id,
                 'department_id' => $document->category_id,
@@ -249,7 +249,7 @@ class DocumentWorkflowService
 
         if ($document->approver_id && !in_array($document->approver_id, $usedUsers, true)) {
             $steps[] = [
-                'title' => 'Функциональное согласование',
+                'title' => 'Aprobación funcional',
                 'role_code' => DocumentWorkflowStep::ROLE_APPROVER,
                 'user_id' => $document->approver_id,
                 'department_id' => $document->category_id,
@@ -264,7 +264,7 @@ class DocumentWorkflowService
 
         if ($officeUser && !in_array($officeUser->id, $usedUsers, true)) {
             $steps[] = [
-                'title' => 'Регистрация и завершение в канцелярии',
+                'title' => 'Registro y cierre en Secretaría de Junta Local',
                 'role_code' => DocumentWorkflowStep::ROLE_OFFICE,
                 'user_id' => $officeUser->id,
                 'department_id' => $document->category_id,

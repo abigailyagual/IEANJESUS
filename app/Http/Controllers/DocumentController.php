@@ -69,13 +69,13 @@ class DocumentController extends Controller
             $document,
             $user,
             'created',
-            'Документ создан',
-            'Карточка зарегистрирована в системе и готова к отправке по маршруту.'
+            'Documento creado',
+            'Registro creado en el sistema y listo para su envío.'
         );
 
         return redirect()
             ->route('documents.show', $document)
-            ->with('status', 'Документ создан. Его можно отправить на маршрут согласования.');
+            ->with('status', 'Documento creado. Puede enviarlo a revisión.');
     }
 
     /**
@@ -104,7 +104,7 @@ class DocumentController extends Controller
     public function edit(Document $document): View
     {
         $user = Auth::user();
-        abort_unless($document->isEditableBy($user), 403, 'Редактирование недоступно для этого документа.');
+        abort_unless($document->isEditableBy($user), 403, 'No se permite editar este documento.');
 
         return view('documents.edit', [
             'document' => $document,
@@ -119,7 +119,7 @@ class DocumentController extends Controller
     public function update(DocumentUpdate $request, Document $document, DocumentWorkflowService $workflowService): RedirectResponse
     {
         $user = Auth::user();
-        abort_unless($document->isEditableBy($user), 403, 'Редактирование недоступно для этого документа.');
+        abort_unless($document->isEditableBy($user), 403, 'No se permite editar este documento.');
 
         $validatedData = $request->validated();
 
@@ -147,15 +147,15 @@ class DocumentController extends Controller
             $document,
             $user,
             'updated',
-            'Карточка документа обновлена',
+            'Registro del documento actualizado',
             $document->status === 'draft'
-                ? 'Изменения сохранены, документ можно повторно отправить на согласование.'
-                : 'Содержимое документа и реквизиты были обновлены.'
+                ? 'Cambios guardados, puede reenviar el documento a revisión.'
+                : 'Contenido y datos del documento actualizados.'
         );
 
         return redirect()
             ->route('documents.show', $document)
-            ->with('status', 'Документ обновлен.');
+            ->with('status', 'Documento actualizado.');
     }
 
     /**
@@ -164,14 +164,14 @@ class DocumentController extends Controller
     public function destroy(Document $document, DocumentWorkflowService $workflowService): RedirectResponse
     {
         $user = Auth::user();
-        abort_unless($document->isEditableBy($user) || $user->isAdmin(), 403, 'Удаление недоступно.');
+        abort_unless($document->isEditableBy($user) || $user->isAdmin(), 403, 'No se permite eliminar.');
 
         $workflowService->log(
             $document,
             $user,
             'deleted',
-            'Документ удален',
-            'Карточка переведена в удаленные записи.'
+            'Documento eliminado',
+            'Registro marcado como eliminado.'
         );
 
         $document->delete();
@@ -179,7 +179,7 @@ class DocumentController extends Controller
 
         return redirect()
             ->route('documents.index')
-            ->with('status', 'Документ удален.');
+            ->with('status', 'Documento eliminado.');
     }
 
     /**
@@ -201,13 +201,13 @@ class DocumentController extends Controller
     public function submit(Document $document, DocumentWorkflowService $workflowService): RedirectResponse
     {
         $user = Auth::user();
-        abort_unless($document->canBeSubmittedBy($user), 403, 'Отправка на согласование недоступна.');
+        abort_unless($document->canBeSubmittedBy($user), 403, 'No se permite enviar a revisión.');
 
         $workflowService->submit($document, $user);
 
         return redirect()
             ->route('documents.show', $document)
-            ->with('status', 'Документ отправлен по маршруту согласования.');
+            ->with('status', 'Documento enviado al flujo de aprobación.');
     }
 
     /**
@@ -216,7 +216,7 @@ class DocumentController extends Controller
     public function approve(Request $request, Document $document, DocumentWorkflowService $workflowService): RedirectResponse
     {
         $user = Auth::user();
-        abort_unless($document->canBeApprovedBy($user), 403, 'Согласование недоступно.');
+        abort_unless($document->canBeApprovedBy($user), 403, 'No se permite aprobar.');
 
         $validated = $request->validate([
             'comment' => ['nullable', 'string', 'max:1000'],
@@ -226,7 +226,7 @@ class DocumentController extends Controller
 
         return redirect()
             ->route('documents.show', $document)
-            ->with('status', 'Этап маршрута подтвержден.');
+            ->with('status', 'Etapa del flujo confirmada.');
     }
 
     /**
@@ -235,7 +235,7 @@ class DocumentController extends Controller
     public function reject(Request $request, Document $document, DocumentWorkflowService $workflowService): RedirectResponse
     {
         $user = Auth::user();
-        abort_unless($document->canBeApprovedBy($user), 403, 'Возврат документа недоступен.');
+        abort_unless($document->canBeApprovedBy($user), 403, 'No se permite devolver el documento.');
 
         $validated = $request->validate([
             'comment' => ['nullable', 'string', 'max:1000'],
@@ -244,12 +244,12 @@ class DocumentController extends Controller
         $workflowService->reject(
             $document,
             $user,
-            trim((string) ($validated['comment'] ?? '')) ?: 'Нужно внести правки и повторно отправить документ.'
+            trim((string) ($validated['comment'] ?? '')) ?: 'Realice las correcciones y reenvíe el documento.'
         );
 
         return redirect()
             ->route('documents.show', $document)
-            ->with('status', 'Документ возвращен на доработку.');
+            ->with('status', 'Documento devuelto para corrección.');
     }
 
     /**
@@ -258,7 +258,7 @@ class DocumentController extends Controller
     public function archive(Request $request, Document $document, DocumentWorkflowService $workflowService): RedirectResponse
     {
         $user = Auth::user();
-        abort_unless($document->canBeArchivedBy($user), 403, 'Архивация недоступна.');
+        abort_unless($document->canBeArchivedBy($user), 403, 'No se permite archivar.');
 
         $validated = $request->validate([
             'comment' => ['nullable', 'string', 'max:1000'],
@@ -268,7 +268,7 @@ class DocumentController extends Controller
 
         return redirect()
             ->route('documents.show', $document)
-            ->with('status', 'Документ отправлен в электронный архив.');
+            ->with('status', 'Documento enviado al archivo electrónico.');
     }
 
     /**
@@ -317,7 +317,7 @@ class DocumentController extends Controller
             ->visibleTo($user)
             ->exists();
 
-        abort_unless($allowed, 403, 'Просмотр недоступен.');
+        abort_unless($allowed, 403, 'No se permite consultar.');
     }
 
     /**

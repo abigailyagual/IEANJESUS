@@ -21,7 +21,7 @@ class DocumentJournalLivewireTest extends TestCase
         }
 
         $department = Category::create([
-            'name' => 'ИТ-служба',
+            'name' => 'Departamento de TI',
             'code' => 'IT',
         ]);
 
@@ -30,14 +30,14 @@ class DocumentJournalLivewireTest extends TestCase
         ]);
         $user->categories()->sync([$department->id]);
 
-        $visibleDocument = $this->makeDocument($department, $user, 'Регламент доступа к серверной');
-        $hiddenDocument = $this->makeDocument($department, $user, 'Заявка на закупку ноутбуков');
+        $visibleDocument = $this->makeDocument($department, $user, 'Reglamento de acceso a la sala de servidores');
+        $hiddenDocument = $this->makeDocument($department, $user, 'Solicitud de compra de portátiles');
 
         Livewire::actingAs($user)
             ->test(DocumentJournal::class)
             ->assertSee($visibleDocument->name)
             ->assertSee($hiddenDocument->name)
-            ->set('search', 'серверной')
+            ->set('search', 'servidores')
             ->assertSee($visibleDocument->name)
             ->assertDontSee($hiddenDocument->name);
     }
@@ -51,7 +51,7 @@ class DocumentJournalLivewireTest extends TestCase
             'status' => 'draft',
             'priority' => 'normal',
             'file' => 'test.txt',
-            'summary' => 'Проверка Livewire-журнала.',
+            'summary' => 'Prueba del registro Livewire.',
             'external_partner' => null,
             'category_id' => $department->id,
             'author_id' => $author->id,

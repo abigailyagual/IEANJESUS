@@ -35,6 +35,8 @@ class DocumentUpdate extends FormRequest
             'approver_id' => ['nullable', 'exists:users,id'],
             'visibility' => ['nullable', 'boolean'],
             'due_at' => ['nullable', 'date'],
+            'report_month' => ['required', 'integer', 'between:1,12'],
+            'report_year' => ['required', 'integer', 'between:2020,2100'],
         ];
     }
 

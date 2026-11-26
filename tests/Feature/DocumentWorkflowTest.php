@@ -44,17 +44,17 @@ class DocumentWorkflowTest extends TestCase
         $document = $this->makeDocument($department, $author, $approver);
 
         $this->actingAs($author)->post(route('documents.submit', $document));
-        $this->actingAs($head)->post(route('documents.approve', $document), ['comment' => 'Согласовано руководителем.']);
+        $this->actingAs($head)->post(route('documents.approve', $document), ['comment' => 'Aprobado por el director.']);
 
         $document->refresh();
         $this->assertSame($approver->id, $document->current_step?->user_id);
 
-        $this->actingAs($approver)->post(route('documents.approve', $document), ['comment' => 'Юридических замечаний нет.']);
+        $this->actingAs($approver)->post(route('documents.approve', $document), ['comment' => 'Sin observaciones jurídicas.']);
 
         $document->refresh();
         $this->assertSame($office->id, $document->current_step?->user_id);
 
-        $this->actingAs($office)->post(route('documents.approve', $document), ['comment' => 'Документ зарегистрирован.']);
+        $this->actingAs($office)->post(route('documents.approve', $document), ['comment' => 'Documento registrado.']);
 
         $document->refresh();
 
@@ -76,13 +76,13 @@ class DocumentWorkflowTest extends TestCase
         $this->actingAs($author)->post(route('documents.submit', $document));
         $this->actingAs($head)->post(route('documents.approve', $document));
         $this->actingAs($approver)->post(route('documents.reject', $document), [
-            'comment' => 'Нужно уточнить сроки и приложить новый график.',
+            'comment' => 'Se deben precisar los plazos y adjuntar el nuevo cronograma.',
         ]);
 
         $document->refresh();
 
         $this->assertSame('rejected', $document->status);
-        $this->assertSame('Нужно уточнить сроки и приложить новый график.', $document->rejection_reason);
+        $this->assertSame('Se deben precisar los plazos y adjuntar el nuevo cronograma.', $document->rejection_reason);
         $this->assertDatabaseHas('document_workflow_steps', [
             'document_id' => $document->id,
             'sequence' => 2,
@@ -106,7 +106,7 @@ class DocumentWorkflowTest extends TestCase
         $this->actingAs($approver)->post(route('documents.approve', $document));
         $this->actingAs($office)->post(route('documents.approve', $document));
         $this->actingAs($office)->post(route('documents.archive', $document), [
-            'comment' => 'Архивный номер присвоен.',
+            'comment' => 'Número de archivo asignado.',
         ]);
 
         $document->refresh();
@@ -125,7 +125,7 @@ class DocumentWorkflowTest extends TestCase
     protected function makeWorkflowActors(): array
     {
         $department = Category::create([
-            'name' => 'ИТ-служба',
+            'name' => 'Departamento de TI',
             'code' => 'IT',
         ]);
 
@@ -155,13 +155,13 @@ class DocumentWorkflowTest extends TestCase
     protected function makeDocument(Category $department, User $author, User $approver): Document
     {
         return Document::create([
-            'name' => 'Тестовый документ',
+            'name' => 'Documento de prueba',
             'registration_number' => 'INT-' . now()->format('Y') . '-9999',
             'document_type' => 'internal',
             'status' => 'draft',
             'priority' => 'normal',
             'file' => 'test.txt',
-            'summary' => 'Проверка маршрута согласования.',
+            'summary' => 'Prueba del flujo de aprobación.',
             'external_partner' => null,
             'category_id' => $department->id,
             'author_id' => $author->id,

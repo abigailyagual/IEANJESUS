@@ -9,33 +9,44 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
+    
     public function up(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->string('position')->nullable()->after('email');
-            $table->string('phone')->nullable()->after('position');
+            $table->string('position')->nullable();
+            $table->string('phone')->nullable();
         });
 
         Schema::table('categories', function (Blueprint $table) {
-            $table->string('code')->nullable()->after('name');
+            $table->string('code')->nullable();
         });
 
         Schema::table('documents', function (Blueprint $table) {
-            $table->string('registration_number')->nullable()->after('id');
-            $table->string('document_type')->default('internal')->after('name');
-            $table->string('status')->default('draft')->after('document_type');
-            $table->string('priority')->default('normal')->after('status');
-            $table->text('summary')->nullable()->after('file');
-            $table->string('external_partner')->nullable()->after('summary');
-            $table->foreignId('author_id')->nullable()->after('category_id')->constrained('users')->nullOnDelete();
-            $table->foreignId('approver_id')->nullable()->after('author_id')->constrained('users')->nullOnDelete();
-            $table->date('due_at')->nullable()->after('visibility');
-            $table->timestamp('submitted_at')->nullable()->after('due_at');
-            $table->timestamp('approved_at')->nullable()->after('submitted_at');
-            $table->timestamp('archived_at')->nullable()->after('approved_at');
-            $table->text('rejection_reason')->nullable()->after('archived_at');
+            $table->string('registration_number')->nullable();
+            $table->string('document_type')->default('internal');
+            $table->string('status')->default('draft');
+            $table->string('priority')->default('normal');
+            $table->text('summary')->nullable();
+            $table->string('external_partner')->nullable();
+
+             $table->foreignId('author_id')
+                ->nullable()
+                ->constrained('users')
+                ->nullOnDelete();
+
+            $table->foreignId('approver_id')
+                ->nullable()
+                ->constrained('users')
+                ->nullOnDelete();
+
+            $table->date('due_at')->nullable();
+            $table->timestamp('submitted_at')->nullable();
+            $table->timestamp('approved_at')->nullable();
+            $table->timestamp('archived_at')->nullable();
+            $table->text('rejection_reason')->nullable();
         });
     }
+
 
     /**
      * Reverse the migrations.

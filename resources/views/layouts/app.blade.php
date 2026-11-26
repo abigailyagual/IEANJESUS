@@ -40,10 +40,13 @@
     </div>
     <footer class="bg-white text-center lg:text-left">
         <hr>
-        <div class="p-4 text-center text-neutral-700 text-sm">
-          © 2023 Copyright:
-          <a class="text-neutral-700 text-sm" href="https://tailwind-elements.com/">Ofppt - F.Master V 1.00</a>
-        </div>
+        
+    <div class="p-4 text-center text-neutral-700 text-sm">
+        © {{ date('Y') }} IEANJESÚS La Libertad.
+        Sistema de Gestión de Informes Mensuales.
+        Todos los derechos reservados.
+    </div>
+
       </footer>      
     <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/1.7.0/flowbite.min.js"></script>
 

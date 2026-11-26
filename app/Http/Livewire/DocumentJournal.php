@@ -4,6 +4,7 @@ namespace App\Http\Livewire;
 
 use App\Models\Category;
 use App\Models\Document;
+use App\Models\DocumentWorkflowStep;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Auth;
@@ -43,62 +44,134 @@ class DocumentJournal extends Component
         $this->onlyTasks = $onlyTasks;
     }
 
+    /**
+     * Reinicia la paginación cuando cambian los filtros.
+     */
     public function updated(): void
     {
         $this->resetPage();
     }
 
+    /**
+     * Limpia todos los filtros.
+     */
     public function clearFilters(): void
     {
-        $this->reset(['search', 'categoryId', 'status', 'onlyTasks']);
+        $this->reset([
+            'search',
+            'categoryId',
+            'status',
+            'onlyTasks',
+        ]);
+
         $this->resetPage();
     }
 
+    /**
+     * Muestra el listado de informes mensuales.
+     */
     public function render()
     {
         $user = $this->currentUser();
+
         $categories = $this->availableCategories($user);
+
+        $activeDepartment = $this->categoryId
+            ? $categories->firstWhere('id', $this->categoryId)
+            : null;
 
         return view('livewire.document-journal', [
             'categories' => $categories,
-            'documents' => $this->documentsQuery($user)->paginate(12),
+
+            'documents' => $this->documentsQuery($user)
+                ->paginate(12),
+
             'activeDepartmentName' => $this->categoryId
-                ? optional($categories->firstWhere('id', $this->categoryId))->name
-                : 'Все отделы',
+                ? ($activeDepartment?->name ?? 'Departamento no disponible')
+                : 'Todos los departamentos',
         ]);
     }
 
+    /**
+     * Construye la consulta respetando los permisos del usuario.
+     */
     protected function documentsQuery(User $user): Builder
     {
         $search = trim($this->search);
 
         return Document::query()
-            ->with(['category', 'author', 'approver', 'workflowSteps.user'])
+            ->with([
+                'category',
+                'author',
+                'approver',
+                'workflowSteps.user',
+            ])
             ->visibleTo($user)
-            ->when($this->categoryId, fn (Builder $query) => $query->where('category_id', $this->categoryId))
-            ->when($this->status !== '', fn (Builder $query) => $query->where('status', $this->status))
-            ->when($this->onlyTasks, fn (Builder $query) => $query->whereHas('workflowSteps', function (Builder $stepQuery) use ($user) {
-                $stepQuery
-                    ->where('round', function ($roundQuery) {
-                        $roundQuery->select('workflow_round')
-                            ->from('documents')
-                            ->whereColumn('documents.id', 'document_workflow_steps.document_id');
-                    })
-                    ->where('status', 'in_progress')
-                    ->where('user_id', $user->id);
-            }))
-            ->when($search !== '', function (Builder $query) use ($search) {
-                $query->where(function (Builder $builder) use ($search) {
-                    $builder
-                        ->where('name', 'like', '%' . $search . '%')
-                        ->orWhere('registration_number', 'like', '%' . $search . '%')
-                        ->orWhere('summary', 'like', '%' . $search . '%')
-                        ->orWhere('external_partner', 'like', '%' . $search . '%');
-                });
-            })
+
+            // Filtrar por departamento.
+            ->when(
+                $this->categoryId,
+                fn (Builder $query) =>
+                    $query->where('category_id', $this->categoryId)
+            )
+
+            // Filtrar por estado.
+            ->when(
+                $this->status !== '',
+                fn (Builder $query) =>
+                    $query->where('status', $this->status)
+            )
+
+            // Mostrar solamente tareas asignadas al usuario.
+            ->when(
+                $this->onlyTasks,
+                fn (Builder $query) =>
+                    $query->whereHas(
+                        'workflowSteps',
+                        function (Builder $stepQuery) use ($user) {
+                            $stepQuery
+                                ->where('round', function ($roundQuery) {
+                                    $roundQuery
+                                        ->select('workflow_round')
+                                        ->from('documents')
+                                        ->whereColumn(
+                                            'documents.id',
+                                            'document_workflow_steps.document_id'
+                                        );
+                                })
+                                ->where(
+                                    'status',
+                                    DocumentWorkflowStep::STATUS_IN_PROGRESS
+                                )
+                                ->where('user_id', $user->id);
+                        }
+                    )
+            )
+
+            // Búsqueda sin distinguir mayúsculas y minúsculas.
+            // ILIKE es compatible con PostgreSQL.
+            ->when(
+                $search !== '',
+                function (Builder $query) use ($search) {
+                    $query->where(
+                        function (Builder $builder) use ($search) {
+                            $term = '%' . $search . '%';
+
+                            $builder
+                                ->where('name', 'ILIKE', $term)
+                                ->orWhere('registration_number', 'ILIKE', $term)
+                                ->orWhere('summary', 'ILIKE', $term)
+                                ->orWhere('external_partner', 'ILIKE', $term);
+                        }
+                    );
+                }
+            )
             ->latest();
     }
 
+    /**
+     * Obtiene los departamentos disponibles según el usuario.
+     */
     protected function availableCategories(User $user)
     {
         return $user->canSeeAllDocuments()
@@ -106,6 +179,9 @@ class DocumentJournal extends Component
             : $user->categories()->orderBy('name')->get();
     }
 
+    /**
+     * Obtiene el usuario autenticado.
+     */
     protected function currentUser(): User
     {
         /** @var User $user */

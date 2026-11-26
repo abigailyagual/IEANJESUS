@@ -36,4 +36,11 @@ class Category extends Model
     {
         return $this->belongsToMany(User::class);
     }
+    /**
+ * Informes mensuales asociados al departamento.
+ */
+public function monthlyReports()
+{
+    return $this->hasMany(MonthlyReport::class, 'category_id');
+}
 }

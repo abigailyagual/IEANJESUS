@@ -1,11 +1,14 @@
+
 @extends('layouts.system')
 
-@section('title', 'Журнал документов')
-@section('page-title', 'Журнал документов')
-@section('eyebrow', 'Livewire-интерфейс документооборота')
+@section('title', 'Informes mensuales')
+@section('page-title', 'Gestión de informes mensuales')
+@section('eyebrow', 'IEANJESÚS · Registro y seguimiento institucional')
 
 @section('page-actions')
-    <a href="{{ route('documents.create') }}" class="btn-primary">Новый документ</a>
+    <a href="{{ route('documents.create') }}" class="btn-primary">
+        Nuevo informe mensual
+    </a>
 @endsection
 
 @section('content')
@@ -16,3 +19,4 @@
         'onlyTasks' => $onlyTasks,
     ])
 @endsection
+

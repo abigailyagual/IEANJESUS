@@ -21,17 +21,17 @@ class DocumentWorkflowStep extends Model
     public const STATUS_SKIPPED = 'skipped';
 
     public const ROLE_LABELS = [
-        self::ROLE_DEPARTMENT_HEAD => 'Руководитель отдела',
-        self::ROLE_APPROVER => 'Дополнительный согласующий',
-        self::ROLE_OFFICE => 'Канцелярия',
+        self::ROLE_DEPARTMENT_HEAD => 'Director de departamento',
+        self::ROLE_APPROVER => 'Revisor adicional',
+        self::ROLE_OFFICE => 'Secretaría de Junta Local',
     ];
 
     public const STATUS_LABELS = [
-        self::STATUS_PENDING => 'Ожидает старта',
-        self::STATUS_IN_PROGRESS => 'В работе',
-        self::STATUS_APPROVED => 'Согласовано',
-        self::STATUS_REJECTED => 'Отклонено',
-        self::STATUS_SKIPPED => 'Пропущено',
+        self::STATUS_PENDING => 'Pendiente de inicio',
+        self::STATUS_IN_PROGRESS => 'En proceso',
+        self::STATUS_APPROVED => 'Aprobado',
+        self::STATUS_REJECTED => 'Rechazado',
+        self::STATUS_SKIPPED => 'Omitido',
     ];
 
     protected $fillable = [

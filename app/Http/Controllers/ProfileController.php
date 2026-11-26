@@ -40,21 +40,15 @@ class ProfileController extends Controller
     /**
      * Delete the user's account.
      */
-    public function destroy(Request $request): RedirectResponse
-    {
-        $request->validateWithBag('userDeletion', [
-            'password' => ['required', 'current_password'],
-        ]);
+    
+/**
+ * La eliminación directa de cuentas está deshabilitada.
+ * Las cuentas institucionales deben gestionarse
+ * desde el módulo de administración.
+ */
+public function destroy(Request $request): RedirectResponse
+{
+    abort(403, 'La eliminación de cuentas está deshabilitada. Contacte al administrador del sistema.');
+}
 
-        $user = $request->user();
-
-        Auth::logout();
-
-        $user->delete();
-
-        $request->session()->invalidate();
-        $request->session()->regenerateToken();
-
-        return Redirect::to('/');
-    }
 }

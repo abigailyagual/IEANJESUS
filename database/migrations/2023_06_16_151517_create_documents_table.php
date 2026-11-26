@@ -28,12 +28,10 @@ return new class extends Migration
     /**
      * Reverse the migrations.
      */
-    public function down(): void
-    {
-        Schema::dropIfExists('documents');
-        Schema::table('documents', function (Blueprint $table) {
-            $table->dropForeign(['category_id']);
-            $table->dropSoftDeletes();
-        });
-    }
+    
+public function down(): void
+{
+    Schema::dropIfExists('documents');
+}
+
 };

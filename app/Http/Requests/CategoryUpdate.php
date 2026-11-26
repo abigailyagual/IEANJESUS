@@ -26,14 +26,17 @@ class CategoryUpdate extends FormRequest
         ];
     }
 
-    /**
-     * Get the validation error messages.
-     */
-    public function messages(): array
-    {
-        return [
-            'name.unique' => 'Такой отдел уже существует.',
-            'code.unique' => 'Такой код отдела уже используется.',
-        ];
-    }
+  /**
+ * Mensajes personalizados de validación.
+ */
+public function messages(): array
+{
+    return [
+        'name.unique' =>
+            'Ya existe un departamento registrado con este nombre.',
+
+        'code.unique' =>
+            'El código ingresado ya está asignado a otro departamento.',
+    ];
+}
 }
